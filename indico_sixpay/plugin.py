@@ -29,7 +29,7 @@ from indico.core.plugins import IndicoPlugin, url_for_plugin
 from indico.modules.events.payment import \
     PaymentEventSettingsFormBase, PaymentPluginMixin, PaymentPluginSettingsFormBase
 
-from .utility import gettext, to_small_currency
+from .utility import gettext, to_small_currency, jsonify_payment_form_data
 # blueprint mounts the request handlers onto URLs
 from .blueprint import blueprint
 
@@ -196,7 +196,10 @@ class SixpayPaymentPlugin(PaymentPluginMixin, IndicoPlugin):
         transaction['FAILLINK'] = url_for_plugin('payment_sixpay.failure', registration.locator.uuid, _external=True)
         # where to asynchronously call back from SixPay
         transaction['NOTIFYURL'] = url_for_plugin('payment_sixpay.notify', registration.locator.uuid, _external=True)
-        data['payment_url'] = self._get_payment_url(sixpay_url=plugin_settings.get('url'), transaction_data=transaction)
+
+        #data['payment_url'] = self._get_payment_url(sixpay_url=plugin_settings.get('url'), transaction_data=transaction)
+        data['payment_url'] = self._get_payment_url(sixpay_url=plugin_settings.get('url'),
+                                                    transaction_data=jsonify_payment_form_data(transaction))
         return data
 
     @staticmethod
@@ -252,7 +255,8 @@ class SixpayPaymentPlugin(PaymentPluginMixin, IndicoPlugin):
     def _get_payment_url(self, sixpay_url, transaction_data):
         """Send transaction data to SixPay to get a signed URL for the user request"""
         print('------------- SixPay DEBUG: entering plugin._get_payment_url')
-        endpoint = urlparse.urljoin(sixpay_url, 'CreatePayInit.asp')
+        #endpoint = urlparse.urljoin(sixpay_url, 'CreatePayInit.asp')
+        endpoint = urlparse.urljoin(sixpay_url, '/Payment/v1/PaymentPage/Initialize')
         print('------------- SixPay DEBUG: request endpoint is {}'.format(endpoint))
         url_request = requests.post(endpoint, data=transaction_data)
         print('------------- SixPay DEBUG: POSTed request: {}'.format(url_request.url))

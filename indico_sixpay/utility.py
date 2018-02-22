@@ -18,6 +18,7 @@
 from __future__ import unicode_literals, division
 
 import iso4217
+import uuid
 from werkzeug.exceptions import NotImplemented as HTTPNotImplemented
 
 from indico.util.i18n import make_bound_gettext
@@ -59,3 +60,62 @@ def to_large_currency(small_currency_amount, iso_code):
     if exponent == 0:
         return small_currency_amount
     return small_currency_amount / (10 ** exponent)
+
+
+def jsonify_payment_form_data(form_data):
+    """Compiles map with parameters which can be posted to the saferpay
+    json api for payment page initialisation request
+        see https://saferpay.github.io/jsonapi/index.html#Payment_v1_PaymentPage_Initialize
+    """
+
+    # transaction_parameters = {
+    #     'ACCOUNTID': str(plugin_settings.get('account_id')),
+    #     # indico handles price as largest currency, but six expects smallest
+    #     # e.g. EUR: indico uses 100.2 Euro, but six expects 10020 Cent
+    #     'AMOUNT': '{:.0f}'.format(to_small_currency(payment_data['amount'], payment_data['currency'])),
+    #     'CURRENCY': payment_data['currency'],
+    #     'DESCRIPTION': payment_data['order_description'][:50],
+    #     'ORDERID': payment_data['order_identifier'][:80],
+    #     'SHOWLANGUAGES': 'yes',
+    # }
+    # if plugin_settings.get('notification_mail'):
+    #     transaction_parameters['NOTIFYADDRESS'] = plugin_settings.get('notification_mail')
+    # transaction['SUCCESSLINK'] = url_for_plugin('payment_sixpay.success', registration.locator.uuid, _external=True)
+    # transaction['BACKLINK'] = url_for_plugin('payment_sixpay.cancel', registration.locator.uuid, _external=True)
+    # transaction['FAILLINK'] = url_for_plugin('payment_sixpay.failure', registration.locator.uuid, _external=True)
+    # # where to asynchronously call back from SixPay
+    # transaction['NOTIFYURL'] = url_for_plugin('payment_sixpay.notify', registration.locator.uuid, _external=True)
+
+    # JSON API expects customer id and terminal id separately
+    C_ID, T_ID = form_data['ACCOUNTID'].split('-')
+    # JSON API wants request id, unique for each request and unchanged by resends. Use uuid generated from orderid
+    REQUEST_ID = uuid.uuid3('indico_sixpay', form_data['ORDERID'])
+    json_data =  {
+        "RequestHeader": {
+            "SpecVersion": "1.8",
+            "CustomerId": C_ID,
+            "RequestId": REQUEST_ID,
+            "RetryIndicator": 0
+        },
+        "TerminalId": T_ID,
+        "Payment": {
+            "Amount": {
+                "Value": form_data['AMOUNT'],
+                "CurrencyCode": form_data['CURRENCY'],
+            },
+            "OrderId": form_data['ORDERID'],
+            "Description": form_data['DESCRIPTION']
+        },
+        "ReturnUrls": {
+            "Success": form_data['SUCCESSLINK'],
+            "Fail": form_data['FAILLINK'],
+            "Abort": form_data['BACKLINK']
+        },
+        "Notification": {
+            "NotifyUrl": form_data['NOTIFYURL']
+        }
+    }
+    if form_data.get('NOTIFYADDRESS'):
+        json_data["Notification"]["MerchantEmail"] = form_data['NOTIFYADDRESS']
+
+    return json_data

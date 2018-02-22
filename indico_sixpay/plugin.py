@@ -257,8 +257,10 @@ class SixpayPaymentPlugin(PaymentPluginMixin, IndicoPlugin):
         print('------------- SixPay DEBUG: entering plugin._get_payment_url')
         #endpoint = urlparse.urljoin(sixpay_url, 'CreatePayInit.asp')
         endpoint = urlparse.urljoin(sixpay_url, '/api/Payment/v1/PaymentPage/Initialize')
+        headers = {'Content-Type': 'application/json; charset=utf-8',
+                   'Accept': 'application/json'}
         print('------------- SixPay DEBUG: request endpoint is {}'.format(endpoint))
-        url_request = requests.post(endpoint, data=transaction_data)
+        url_request = requests.post(endpoint, data=transaction_data, headers=headers)
         print('------------- SixPay DEBUG: POSTed request: {}'.format(url_request.url))
         print('------------- SixPay DEBUG: POSTed headers: {}'.format(url_request.request.headers))
         print('------------- SixPay DEBUG: response headers: {}'.format(url_request.headers))

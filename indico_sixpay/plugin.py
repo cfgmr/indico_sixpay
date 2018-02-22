@@ -256,6 +256,9 @@ class SixpayPaymentPlugin(PaymentPluginMixin, IndicoPlugin):
         print('------------- SixPay DEBUG: request endpoint is {}'.format(endpoint))
         url_request = requests.post(endpoint, data=transaction_data)
         print('------------- SixPay DEBUG: POSTed request: {}'.format(url_request.url))
+        print('------------- SixPay DEBUG: POSTed headers: {}'.format(url_request.request.headers))
+        print('------------- SixPay DEBUG: response headers: {}'.format(url_request.headers))
+        print('------------- SixPay DEBUG: response text: {}'.format(url_request.text))
         # raise any HTTP errors
         url_request.raise_for_status()
         if url_request.text.startswith('ERROR'):

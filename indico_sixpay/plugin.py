@@ -255,6 +255,7 @@ class SixpayPaymentPlugin(PaymentPluginMixin, IndicoPlugin):
         endpoint = urlparse.urljoin(sixpay_url, 'CreatePayInit.asp')
         print('------------- SixPay DEBUG: request endpoint is {}'.format(endpoint))
         url_request = requests.post(endpoint, data=transaction_data)
+        print('------------- SixPay DEBUG: POSTed request: {}'.format(url_request.url))
         # raise any HTTP errors
         url_request.raise_for_status()
         if url_request.text.startswith('ERROR'):

@@ -256,7 +256,7 @@ class SixpayPaymentPlugin(PaymentPluginMixin, IndicoPlugin):
         """Send transaction data to SixPay to get a signed URL for the user request"""
         print('------------- SixPay DEBUG: entering plugin._get_payment_url')
         #endpoint = urlparse.urljoin(sixpay_url, 'CreatePayInit.asp')
-        endpoint = urlparse.urljoin(sixpay_url, '/Payment/v1/PaymentPage/Initialize')
+        endpoint = urlparse.urljoin(sixpay_url, '/api/Payment/v1/PaymentPage/Initialize')
         print('------------- SixPay DEBUG: request endpoint is {}'.format(endpoint))
         url_request = requests.post(endpoint, data=transaction_data)
         print('------------- SixPay DEBUG: POSTed request: {}'.format(url_request.url))

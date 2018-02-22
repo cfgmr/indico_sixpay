@@ -89,7 +89,7 @@ def jsonify_payment_form_data(form_data):
     # JSON API expects customer id and terminal id separately
     C_ID, T_ID = form_data['ACCOUNTID'].split('-')
     # JSON API wants request id, unique for each request and unchanged by resends. Use uuid generated from orderid
-    REQUEST_ID = uuid.uuid3('indico_sixpay', form_data['ORDERID'])
+    REQUEST_ID = str(uuid.uuid3(uuid.NAMESPACE_OID, form_data['ORDERID']))
     json_data =  {
         "RequestHeader": {
             "SpecVersion": "1.8",

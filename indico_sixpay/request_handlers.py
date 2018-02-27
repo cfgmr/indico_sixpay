@@ -112,7 +112,9 @@ class SixPayResponseHandler(BaseRequestHandler):
 
     @staticmethod
     def _perform_request(task, endpoint, **data):
+        print('------------- SixPay DEBUG: Entering _perform_request(task={}, endpoint={}, **data={})'.format(task, endpoint, data))
         request_url = urlparse.urljoin(current_plugin.settings.get('url'), endpoint)
+        print("------------- SixPay DEBUG: request_url {} generated from urlparse.urljoin({}, {})").format(request_url, current_plugin.settings.get('url'), endpoint)
         response = requests.post(request_url, data)
         response.raise_for_status()
         if response.text.startswith('ERROR'):

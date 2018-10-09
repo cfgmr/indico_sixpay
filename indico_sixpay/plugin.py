@@ -273,4 +273,5 @@ class SixpayPaymentPlugin(PaymentPluginMixin, IndicoPlugin):
         url_request.raise_for_status()
         if url_request.text.startswith('ERROR'):
             raise HTTPInternalServerError('Failed request to SixPay service: %s' % url_request.text)
+
         return url_request.text

@@ -11,7 +11,7 @@ If the plugin is enabled, event participants can select the ``SixPay`` payment m
 Payment is performed via the **Saferpay Payment Page**, an external service provided by SIX Payment Services.
 The plugin handles the user interaction inside Indico, and the secure, asynchronous transaction with SIX Payment Services.
 
-*This is a prerelease for Indico 2.0.*
+*This is plugin supports Indico 2.0.*
 *The legacy plugin for Indico 1.2 is [hosted on github](https://github.com/maxfischer2781/indico_sixpay/tree/indico-1.2).*
 
 ## Installation
@@ -45,12 +45,6 @@ After reloading the EPayment plugin in the Indico Admin panel, you can enable th
 
 This project is hosted on [github](https://github.com/maxfischer2781/indico_sixpay).
 If you encounter any bugs or missing features, please use the [bug tracker](https://github.com/maxfischer2781/indico_sixpay/issues) or submit a [pull request](https://github.com/maxfischer2781/indico_sixpay/pulls).
-
-### Changelog
-
-* **v2.0pre**
-
-    * This is a pre-release of a draft/test version. Any features, interfaces and capabilities are subject to changes.
 
 ## Disclaimer
 

@@ -2,36 +2,58 @@ Installation
 ============
 
 The plugin can be installed using standard Python package managers.
+To enable the plugin, it must be added to the configuration file of indico.
+
+.. seealso:: The official `Indico Plugin Installation Guide`_.
+
 Note that at least ``indico`` 2.0 is required, and will be installed automatically if it is missing.
 
-After reloading the EPayment plugin in the Indico Admin panel, you can enable the SixPay service.
+Installing the package
+----------------------
 
-:note: The ``indico_sixpay`` plugin must be installed for the python version running ``indico``.
+The ``indico_sixpay`` plugin must be installed for the python version running ``indico``.
+With a standard indico installation, you must activate the indico python virtual environment first.
 
-Release Version
----------------
+.. code:: bash
+
+    su - indico
+    source ~/.venv/bin/activate
 
 The latest release version is available for the default python package managers.
 You can directly install the module using ``pip``:
 
 .. code:: bash
 
-    python -m pip install indico_sixpay
+    pip install indico_sixpay
 
 This can also be used to upgrade to a newer version:
 
 .. code:: bash
 
-    python -m pip install indico_sixpay --upgrade
+    pip install indico_sixpay --upgrade
 
-Development Version
--------------------
+Enabling the package
+--------------------
 
-Checkout the `indico_sixpay repository <https://github.com/maxfischer2781/indico_sixpay>`_ to any host running indico.
-From its root directory, install the plugin by running:
+All plugins must be enabled in indico's configuration file.
+By default, the configuration is located in ``/opt/indico/etc/indico.conf``.
 
-.. code::
+.. code:: python
 
-    python setup.py install
+    PLUGINS = {'payment_sixpay'}
 
-:warning: It is not recommended to use the Development Version outside of a testing environment.
+Note that if you need multiple plugins, you must all include them in the set of ``PLUGINS``:
+
+.. code:: python
+
+    PLUGINS = {'payment_manual', 'payment_paypal', 'payment_sixpay'}
+
+After changing the configuration, trigger a reload of the indico services.
+Issue the following commands as ``root``:
+
+.. code:: bash
+
+    touch ~/web/indico.wsgi
+    systemctl restart indico-celery.service
+
+.. _Indico Plugin Installation Guide: https://docs.getindico.io/en/latest/installation/plugins/

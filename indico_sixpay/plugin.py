@@ -169,7 +169,7 @@ class SixpayPaymentPlugin(PaymentPluginMixin, IndicoPlugin):
     #: global default settings - should be a reasonable default
     default_settings = {
         'method_name': 'SixPay',
-        'url': 'https://www.saferpay.com/hosting',
+        'url': 'https://www.saferpay.com/hosting/',
         'account_id': None,
         'order_description': '{event_title}, {registration_title}, {user_name}',
         'order_identifier': '{eventuser_id}',
@@ -202,7 +202,14 @@ class SixpayPaymentPlugin(PaymentPluginMixin, IndicoPlugin):
     def adjust_payment_form_data(self, data):
         """Prepare the payment form shown to registrants"""
         registration = data['registration']
-        plugin_settings = data['event_settings']
+        # indico does not seem to provide stacking of settings
+        # we merge event on top of global settings, but remove placeholder defaults
+        event_settings, global_settings = data['event_settings'], data['settings']
+        plugin_settings = {
+            key: event_settings[key] if event_settings.get(key) is not None else global_settings[key]
+            for key in
+            (set(event_settings) | set(global_settings))
+        }
         # parameters of the transaction - amount, currency, ...
         transaction = self._get_transaction_parameters(data)
         # callbacks of the transaction - where to announce success, failure, ...
